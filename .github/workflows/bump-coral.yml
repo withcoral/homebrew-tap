@@ -1,0 +1,125 @@
+name: Bump Coral Cask
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Coral version without the leading v
+        required: true
+        type: string
+  repository_dispatch:
+    types:
+      - coral-release
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bump-coral-${{ inputs.version || github.event.client_payload.version || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    env:
+      CASK_NAME: coral
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch || 'main' }}
+      VERSION_INPUT: ${{ inputs.version || github.event.client_payload.version }}
+    steps:
+      - name: Resolve tap repository
+        id: tap
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${GITHUB_REPOSITORY:-}" ]]; then
+            echo "GITHUB_REPOSITORY is required." >&2
+            exit 1
+          fi
+
+          TAP_OWNER="${GITHUB_REPOSITORY%%/*}"
+          TAP_REPO="${GITHUB_REPOSITORY#*/}"
+
+          {
+            echo "owner=$TAP_OWNER"
+            echo "repo=$TAP_REPO"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub App token
+        uses: actions/create-github-app-token@v2
+        id: github-app-token
+        with:
+          app-id: ${{ vars.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          repositories: |
+            ${{ steps.tap.outputs.repo }}
+            coral
+
+      - name: Checkout tap
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.DEFAULT_BRANCH }}
+          token: ${{ steps.github-app-token.outputs.token }}
+
+      - name: Resolve version
+        id: release
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          version="${VERSION_INPUT:-}"
+
+          if [[ -z "$version" ]]; then
+            echo "A version is required." >&2
+            exit 1
+          fi
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Link checkout as tap
+        shell: bash
+        env:
+          TAP_OWNER: ${{ steps.tap.outputs.owner }}
+          TAP_REPO: ${{ steps.tap.outputs.repo }}
+        run: |
+          set -euo pipefail
+
+          tap_path="$(brew --repository)/Library/Taps/${TAP_OWNER}/${TAP_REPO}"
+          mkdir -p "$(dirname "$tap_path")"
+          rm -rf "$tap_path"
+          ln -s "$GITHUB_WORKSPACE" "$tap_path"
+
+      - name: Bump cask
+        shell: bash
+        env:
+          TAP_OWNER: ${{ steps.tap.outputs.owner }}
+          TAP_REPO: ${{ steps.tap.outputs.repo }}
+          HOMEBREW_GITHUB_API_TOKEN: ${{ steps.github-app-token.outputs.token }}
+        run: |
+          set -euo pipefail
+
+          brew bump-cask-pr \
+            --write-only \
+            --no-audit \
+            --version "${{ steps.release.outputs.version }}" \
+            "${TAP_OWNER}/${TAP_REPO#homebrew-}/${CASK_NAME}"
+
+      - name: Commit cask bump
+        shell: bash
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          if git diff --quiet -- Casks/coral.rb; then
+            echo "No cask changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add Casks/coral.rb
+          git commit -m "coral ${VERSION}"
+          git push origin "HEAD:${DEFAULT_BRANCH}"
