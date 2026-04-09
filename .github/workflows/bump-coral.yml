@@ -47,7 +47,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub App token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3.0.0
         id: github-app-token
         with:
           app-id: ${{ vars.RELEASE_APP_ID }}
@@ -57,10 +57,11 @@ jobs:
             coral
 
       - name: Checkout tap
-        uses: actions/checkout@v4
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
         with:
           ref: ${{ env.DEFAULT_BRANCH }}
           token: ${{ steps.github-app-token.outputs.token }}
+          persist-credentials: true # Needed for subsequent git commit
 
       - name: Resolve version
         id: release
@@ -96,13 +97,14 @@ jobs:
           TAP_OWNER: ${{ steps.tap.outputs.owner }}
           TAP_REPO: ${{ steps.tap.outputs.repo }}
           HOMEBREW_GITHUB_API_TOKEN: ${{ steps.github-app-token.outputs.token }}
+          STEPS_RELEASE_OUTPUTS_VERSION: ${{ steps.release.outputs.version }}
         run: |
           set -euo pipefail
 
           brew bump-cask-pr \
             --write-only \
             --no-audit \
-            --version "${{ steps.release.outputs.version }}" \
+            --version "${STEPS_RELEASE_OUTPUTS_VERSION}" \
             "${TAP_OWNER}/${TAP_REPO#homebrew-}/${CASK_NAME}"
 
       - name: Commit cask bump
