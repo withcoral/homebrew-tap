@@ -11,8 +11,8 @@ cask "coral" do
 
   binary "coral"
 
-  # generate_completions_from_executable "coral",
-  #   shell_parameter_format: :clap
+  generate_completions_from_executable "coral",
+    shell_parameter_format: :clap
 
   on_macos do
     on_intel do
