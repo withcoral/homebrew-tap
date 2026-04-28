@@ -11,8 +11,6 @@ cask "coral" do
 
   binary "coral"
 
-  # generate_completions_from_executable("coral", "completion", shells: [:bash, :zsh, :fish])
-
   on_macos do
     on_intel do
       sha256 "81fed3c38f98301ed2777618bbcc4ecbd6f04ae25fb582a51ac95a9bc9472c17"
@@ -38,4 +36,6 @@ cask "coral" do
   postflight do
     system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/coral"] if OS.mac?
   end
+
+  generate_completions_from_executable("coral", "completion", shells: [:bash, :zsh, :fish])
 end
