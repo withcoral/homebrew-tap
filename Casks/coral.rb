@@ -1,5 +1,5 @@
 cask "coral" do
-  version "0.1.5"
+  version "0.2.0"
 
   name "Coral"
   desc "Is a single interface for AI agents to query external systems"
@@ -13,22 +13,22 @@ cask "coral" do
 
   on_macos do
     on_intel do
-      sha256 "81fed3c38f98301ed2777618bbcc4ecbd6f04ae25fb582a51ac95a9bc9472c17"
+      sha256 "d10a9e43d5caea16ad53a66600db12ae70bcf02c63c032af6ba548d0f410760a"
       url "https://github.com/withcoral/coral/releases/download/v#{version}/coral-x86_64-apple-darwin.tar.gz"
     end
     on_arm do
-      sha256 "19aee1167af58f296511899a3cf48f6d00428d7285bfd4618a5b1230e2b7ac1d"
+      sha256 "3774d44344d4cc9ec4967837cb64a9f3d71030567e2ebcbdf5b6033fdea056f0"
       url "https://github.com/withcoral/coral/releases/download/v#{version}/coral-aarch64-apple-darwin.tar.gz"
     end
   end
 
   on_linux do
     on_intel do
-      sha256 "ca4de1285c154d248c3e6c5fe87362447acb5d281a047f0212a0970bffa8bdc4"
+      sha256 "76836316522fc81c95a5c4fb715c0ed83a28f5f694023bef3f3c75b41538b507"
       url "https://github.com/withcoral/coral/releases/download/v#{version}/coral-x86_64-unknown-linux-gnu.tar.gz"
     end
     on_arm do
-      sha256 "1986ff0be8742ba214f4c9bcf87e5aaff035338f938b3b40df5b6a5bd8decc4d"
+      sha256 "99420c5366a02d151b6b6d3403708d0d8b70a17421d905e9f46b745e6984d077"
       url "https://github.com/withcoral/coral/releases/download/v#{version}/coral-aarch64-unknown-linux-gnu.tar.gz"
     end
   end
