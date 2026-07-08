@@ -115,8 +115,16 @@ jobs:
         run: |
           set -euo pipefail
 
+          expected="version \"${VERSION}\""
+          if ! grep -Fqx "  ${expected}" Casks/coral.rb; then
+            echo "Expected Casks/coral.rb to contain: ${expected}" >&2
+            echo "Actual version line:" >&2
+            grep -n '^  version ' Casks/coral.rb >&2 || true
+            exit 1
+          fi
+
           if git diff --quiet -- Casks/coral.rb; then
-            echo "No cask changes to commit."
+            echo "Casks/coral.rb already has version ${VERSION}; no cask changes to commit."
             exit 0
           fi
 
