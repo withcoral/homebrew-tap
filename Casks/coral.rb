@@ -2,11 +2,11 @@ cask "coral" do
   arch arm: "aarch64", intel: "x86_64"
   os macos: "apple-darwin", linux: "unknown-linux-gnu"
 
-  version "0.15.2"
-  sha256 arm:          "1ea6319e953ba42ddb44ffe9cda6e4923161199dbae8f0f2e321abc7e70c2b66",
-         intel:        "f0ef792a33a5310e3404c362d976addcd279038b8de74f1f126d7b1272a24c1a",
-         arm64_linux:  "c8b991bef02cb72134aed86b48f1bc7aa4a6cce46e9ab9210eaa8ca5f637902a",
-         x86_64_linux: "9ce841b4f33fed80051a316af04b01455d96bc21bb2e682c39df9f2fbe907878"
+  version "0.15.3"
+  sha256 arm:          "409e3c1bf8a1f6c47ce73ef061ec11949ed7db058d953d698c886a89ef9a5ef9",
+         intel:        "ef614f7146fdcb0eb7f0f4ca23e89d9416b6cb22a6d6091f58725a359e619c61",
+         arm64_linux:  "c74376986b024d6432054d3e7e06ab24cbb5ab7958bcaf071e1a18b41bc4ce82",
+         x86_64_linux: "c16b299e74f35243a392dda6fead95a588c44ae6f478f6899525a842b58f94dc"
 
   url "https://github.com/withcoral/coral/releases/download/v#{version}/coral-#{arch}-#{os}.tar.gz"
   name "Coral"
