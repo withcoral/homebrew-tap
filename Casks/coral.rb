@@ -2,11 +2,11 @@ cask "coral" do
   arch arm: "aarch64", intel: "x86_64"
   os macos: "apple-darwin", linux: "unknown-linux-gnu"
 
-  version "0.15.3"
-  sha256 arm:          "409e3c1bf8a1f6c47ce73ef061ec11949ed7db058d953d698c886a89ef9a5ef9",
-         intel:        "ef614f7146fdcb0eb7f0f4ca23e89d9416b6cb22a6d6091f58725a359e619c61",
-         arm64_linux:  "c74376986b024d6432054d3e7e06ab24cbb5ab7958bcaf071e1a18b41bc4ce82",
-         x86_64_linux: "c16b299e74f35243a392dda6fead95a588c44ae6f478f6899525a842b58f94dc"
+  version "0.15.4"
+  sha256 arm:          "83d2b6c7ba5110108f3a4ed382e3afdb9e4a7c4357836f4624d263a5d5fd48d4",
+         intel:        "d36613fec8463a1c777125566a21271fb3b0a24f6275b82fdbc0226f415c800c",
+         arm64_linux:  "d3108fd94a62666a5954cd24803b3e80691615d959eb739cf759292cc2da45fe",
+         x86_64_linux: "5bd9270ed6cf583bacbdcdffe4adb89fe0f562d6793fe57dbd8769ffb81773d3"
 
   url "https://github.com/withcoral/coral/releases/download/v#{version}/coral-#{arch}-#{os}.tar.gz"
   name "Coral"
@@ -18,10 +18,9 @@ cask "coral" do
   end
 
   binary "coral"
+  generate_completions_from_executable("coral", "completion", shells: [:bash, :zsh, :fish])
 
   postflight do
     system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/coral"] if OS.mac?
   end
-
-  generate_completions_from_executable("coral", "completion", shells: [:bash, :zsh, :fish])
 end
