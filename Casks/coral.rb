@@ -19,8 +19,4 @@ cask "coral" do
 
   binary "coral"
   generate_completions_from_executable("coral", "completion", shells: [:bash, :zsh, :fish])
-
-  postflight do
-    system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/coral"] if OS.mac?
-  end
 end
